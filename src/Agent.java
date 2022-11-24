@@ -307,7 +307,8 @@ public class Agent implements Steppable{
         //  -- If in a meeting or a library, definitely ignore;
         //  -- If in an ER, definitely answer;
         //  -- If at home, more likely to answer(67% answer vs 33% ignore);
-        //  -- If at a party, more likely to ignore(33% answer vs 67% ignore)
+        //  -- If at a party, more likely to ignore(33% answer vs 67% ignore);
+        //  ## If in a subway, more likely to ignore(33% answer vs 67% ignore);
         
         double x = state.random.nextDouble();
         switch((int)(location/Agents.agentsCount)){
@@ -319,17 +320,21 @@ public class Agent implements Steppable{
             case 1:
                 basedonloc = false;
                 break;
-            //at a party
+            //at a library
             case 2:
-                basedonloc = x>0.67;
-                break;
-            //in a library
-            case 3:
-                basedonloc = true;
+                basedonloc = false;
                 break;
             //in an ER
-            case 4:
+            case 3:
                 basedonloc = false;
+                break;
+            //in a CS
+            case 4:
+                basedonloc = x>0.67;
+                break;
+            //in a subway
+            case 5:
+                basedonloc = x>0.67;
                 break;
             default: break;
         }
