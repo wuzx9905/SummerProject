@@ -25,6 +25,9 @@ public class Agent implements Steppable{
     public Bag myColleagues = new Bag();
     public Bag myFriends = new Bag();
     public Bag myStrangers = new Bag();
+
+    //Judging whether it is a listener or a speaker, 0 for listener, 1 for speaker;
+    public int identity = -1;
     
     //neighboring calls to which this agent needs to give feedbacks
     public Bag neighboringConference = new Bag();
@@ -53,6 +56,7 @@ public class Agent implements Steppable{
         remainingSteps = 0;
         this.id = -1;
         initDataset();
+        identity = -1;
     }
     
     public Agent(int id){
@@ -60,6 +64,7 @@ public class Agent implements Steppable{
         remainingSteps = 0;
         this.id = id;
         initDataset();
+        identity = -1;
     }
     
     //Initialize the Weka dataset
@@ -80,7 +85,7 @@ public class Agent implements Steppable{
         
         //urgency
         List<String> tf = new ArrayList<String>();//True of False attributes
-        tf.add("true");tf.add("false");
+        tf.add("0");tf.add("1");tf.add("2");tf.add("3");
         aa = new Attribute("switchOption", tf);
         dataSetList.add(aa);
         //exists_family
@@ -92,8 +97,8 @@ public class Agent implements Steppable{
         //exists_friend
         aa = new Attribute("exists_friend", tf);
         dataSetList.add(aa);
-        //answer or not
-        aa = new Attribute("answer", tf);
+        //match or not
+        aa = new Attribute("match", tf);
         dataSetList.add(aa);
         //payoff, numeric
         aa = new Attribute("@Class@");
@@ -119,7 +124,7 @@ public class Agent implements Steppable{
         one[4] = rec.existsColleague?0:1;
         //exists friend
         one[5] = rec.existsFriend?0:1;
-        //answer or not?
+        //match or not?
         one[6] = 1-rec.action;
         //payoff
         one[7] = rec.getPayoff();
@@ -169,7 +174,7 @@ public class Agent implements Steppable{
                     else
                         location = i*agents.agentsCount +(int)x;
                     break;
-                case 2: //party
+                case 2: //library
                     x = x*agents.librariesCount *4;
                     if (x>=agents.librariesCount)
                         location = i*agents.agentsCount +friendCircle;
@@ -284,6 +289,9 @@ public class Agent implements Steppable{
         -- Answer calls if the agent is at home, parties or diner, and
         -- Ignore calls otherwise(meeting or library)
         -- Ignore calls if casual from strangers, answer otherwise.
+        ## That is to say, if location = home/cs, action = 0;
+        ## else action = 1;
+        ## if agentsRelationship = strangers, switchOption = 2, action = 1;
         */
         boolean basedonloc = true;
         boolean basedoncall = true;
@@ -291,7 +299,7 @@ public class Agent implements Steppable{
         //Originally, the fixed norms are:
         //If in a meeting or a library, not answer
         //Otherwise, answer
-        if ((int)(location/Agents.agentsCount)==1||(int)(location/Agents.agentsCount)==3){
+        if ((int)(location/Agents.agentsCount)==1||(int)(location/Agents.agentsCount)==2){
             basedonloc = false;
         }
         

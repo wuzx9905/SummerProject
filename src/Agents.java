@@ -24,7 +24,7 @@ public class Agents extends SimState {
     
     //location weights are multipliers for probabilities and durations.
     //Use uniform weights for now. Originally {8,2,3,2,1}.
-    public static int[] locationWeights = {1,1,1,1,1};
+    public static int[] locationWeights = {1,1,1,1,1,1};
     
     //Agent will start to learn (instead of using fixed norms) 
     //after the learning period.
