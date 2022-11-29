@@ -41,7 +41,7 @@ public class Agents extends SimState {
         }
     };
     
-    public LinkedHashMap<Long, Integer> numCalls = new LinkedHashMap<Long, Integer>(){
+    public LinkedHashMap<Long, Integer> numReference = new LinkedHashMap<Long, Integer>(){
         @Override
         protected boolean removeEldestEntry(Map.Entry<Long, Integer> eldest){
             return this.size() > windowSize;
@@ -74,7 +74,7 @@ public class Agents extends SimState {
     //keep all calls happening in current step
     public Bag conferencesInThisStep = new Bag();
     
-    //sum of #neighbors of all calls in a step
+    //sum of #neighbors of all references in a step
     //different from #neighbors involved in calls
     public int neighborCount = 0;
     //average happiness of involved people in a step
@@ -98,7 +98,7 @@ public class Agents extends SimState {
         
         try{
             out = new BufferedWriter(new FileWriter("Results_Sim"+simulationNumber+".csv"));
-            out.write("Step,#Conferences,Payoff Per Call,Happiness Per Call,Avg Payoff in Window,Avg Happiness in Window\r\n");
+            out.write("Step,#Conferences,Payoff Per Video Reference,Happiness Per Video Reference,Avg Payoff in Window,Avg Happiness in Window\r\n");
         }catch(Exception e){
             try{
                 out.close();
@@ -199,7 +199,7 @@ public class Agents extends SimState {
                 }
                 
                 //Calculate the overall happiness in this step. 
-                //Caller happiness: +1 if answered, -1 if ignored.
+                //Originator happiness: +1 if answered, -1 if ignored.
                 //Neighbors: based on feedbacks. 
                 //Say there are N neighbors. For each neighbor, 
                 //if positive feedback, +1/N, otherwise, -1/N
@@ -339,14 +339,14 @@ public class Agents extends SimState {
                 
                 //Output the average payoff over a window
                 window.put(state.schedule.getSteps(), payoff);
-                numCalls.put(state.schedule.getSteps(), agents.conferencesInThisStep.size());
+                numReference.put(state.schedule.getSteps(), agents.conferencesInThisStep.size());
                 
                 //Use mean of window, considering #calls in each step
                 payoff = 0.0;
                 int callcount = 0;
                 int totalcallcount = 0;
                 for(Map.Entry<Long, Double> entry : window.entrySet()){
-                	callcount = numCalls.get(entry.getKey());
+                	callcount = numReference.get(entry.getKey());
                     payoff+=entry.getValue()*callcount;
                     totalcallcount+=callcount;
                 }
@@ -359,7 +359,7 @@ public class Agents extends SimState {
                 //Use mean of window, considering #calls in each step
                 overallHappiness = 0.0;
                 for(Map.Entry<Long, Double> entry : window2.entrySet()){
-                	callcount = numCalls.get(entry.getKey());
+                	callcount = numReference.get(entry.getKey());
                     overallHappiness+=entry.getValue()*callcount;
                 }
                 //overallHappiness /= window2.size();

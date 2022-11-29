@@ -21,7 +21,7 @@ public class RecordForLearning {
     public boolean existsColleague;
     public boolean existsFriend;
     public double calleePayoff;
-    public double callerPayoff;
+    public double originatorPayoff;
     public double averageNeighborPayoff;
     
     public RecordForLearning(){
@@ -33,7 +33,7 @@ public class RecordForLearning {
         existsColleague = false;
         existsFriend = false;
         calleePayoff = 0.0;
-        callerPayoff = 0.0;
+        originatorPayoff = 0.0;
         averageNeighborPayoff = 0.0;
     }
     
@@ -57,7 +57,7 @@ public class RecordForLearning {
 
         //callee payoff and caller payoff
         this.calleePayoff = 0.0;
-        this.callerPayoff = 0.0;
+        this.originatorPayoff = 0.0;
         if (conference.action==1){
             //Callee payoff
             //if Callee does not know caller
@@ -66,7 +66,7 @@ public class RecordForLearning {
             }else
                 calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[2]:agents.payoff_a[0]);
             //Caller payoff
-            callerPayoff = (conference.switchOption == 1 ?agents.payoff_a[10]:agents.payoff_a[8]);
+            originatorPayoff = (conference.switchOption == 1 ?agents.payoff_a[10]:agents.payoff_a[8]);
         }else{
             //Callee payoff
             if (conference.isStranger()){
@@ -74,7 +74,7 @@ public class RecordForLearning {
             }else
                 calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[3]:agents.payoff_a[1]);
             //Caller payoff
-            callerPayoff = (conference.switchOption == 1 ?agents.payoff_a[11]:agents.payoff_a[9]);
+            originatorPayoff = (conference.switchOption == 1 ?agents.payoff_a[11]:agents.payoff_a[9]);
         }
         
         averageNeighborPayoff = 0.0;
@@ -96,7 +96,7 @@ public class RecordForLearning {
     
     public double getPayoff(){
         return (weights[0]*calleePayoff
-                +weights[1]*callerPayoff
+                +weights[1]* originatorPayoff
                 +weights[2]*averageNeighborPayoff)/3.0;
     }
     
@@ -122,7 +122,7 @@ public class RecordForLearning {
                 +existsFriend+","
                 +(action==1?"Answer":"Ignore")+","
                 +calleePayoff+","
-                +callerPayoff+","
+                + originatorPayoff +","
                 +averageNeighborPayoff;
     }
     

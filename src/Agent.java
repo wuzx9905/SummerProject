@@ -134,60 +134,60 @@ public class Agent implements Steppable{
     
     public void step(SimState state){
         
-        Agents agents = (Agents)state;
+        Agents currentAgent = (Agents)state;
         double x = 0.0;
         
         //Enter a random place
         if (remainingSteps<=0){
             int sum = 0;
             int i;
-            for(i=0;i<agents.locationWeights.length; i++){
-                sum+=agents.locationWeights[i];
+            for(i=0;i<currentAgent.locationWeights.length; i++){
+                sum+=currentAgent.locationWeights[i];
             }
-            x = agents.random.nextDouble();
+            x = currentAgent.random.nextDouble();
             int y = 0;
-            for(i=0;i<agents.locationWeights.length;i++){
-                y += agents.locationWeights[i];
+            for(i=0;i<currentAgent.locationWeights.length;i++){
+                y += currentAgent.locationWeights[i];
                 if (x<=(double)y/(double)sum)
                     break;
             }
-            if (i>=agents.locationWeights.length)
-                i=agents.locationWeights.length;
+            if (i>=currentAgent.locationWeights.length)
+                i=currentAgent.locationWeights.length;
             
             //location = loction type id * number of agents + location id
             //e.g., meeting #1 with 1000 agents = 1*1000+1=1001
             //75% probability, agent enters own home/meeting/party
             //25% probability, agent enters another random home/meeting/party
-            x = agents.random.nextDouble();
+            x = currentAgent.random.nextDouble();
             switch(i){
                 case 0: //home
-                    x = x*agents.homesCount *4;
-                    if (x>=agents.homesCount)
-                        location = i*agents.agentsCount +familyCircle;
+                    x = x*currentAgent.homesCount *4;
+                    if (x>=currentAgent.homesCount)
+                        location = i*currentAgent.agentsCount +familyCircle;
                     else
-                        location = i*agents.agentsCount +(int)x;
+                        location = i*currentAgent.agentsCount +(int)x;
                     break;
                 case 1: //meeting
-                    x = x*agents.meetingsCount *4;
-                    if (x>=agents.meetingsCount)
-                        location = i*agents.agentsCount +colleagueCircle;
+                    x = x*currentAgent.meetingsCount *4;
+                    if (x>=currentAgent.meetingsCount)
+                        location = i*currentAgent.agentsCount +colleagueCircle;
                     else
-                        location = i*agents.agentsCount +(int)x;
+                        location = i*currentAgent.agentsCount +(int)x;
                     break;
                 case 2: //library
-                    x = x*agents.librariesCount *4;
-                    if (x>=agents.librariesCount)
-                        location = i*agents.agentsCount +friendCircle;
+                    x = x*currentAgent.librariesCount *4;
+                    if (x>=currentAgent.librariesCount)
+                        location = i*currentAgent.agentsCount +friendCircle;
                     else
-                        location = i*agents.agentsCount +(int)x;
+                        location = i*currentAgent.agentsCount +(int)x;
                     break;
                 default:
-                    location = i*agents.agentsCount;
+                    location = i*currentAgent.agentsCount;
             }
-            remainingSteps = (int)(agents.random.nextGaussian()*30+60.5);
+            remainingSteps = (int)(currentAgent.random.nextGaussian()*30+60.5);
             if (remainingSteps>90) remainingSteps = 90;
             if (remainingSteps<30) remainingSteps = 30;
-            remainingSteps *= agents.locationWeights[i];
+            remainingSteps *= currentAgent.locationWeights[i];
             
         }else{
             remainingSteps --;
@@ -204,13 +204,13 @@ public class Agent implements Steppable{
         //Once every agent enters a place...
         if (state.schedule.getSteps()<=0) return;
         
-        //As a caller
+        //As an originator
         //Randomly make a random call
-        x = agents.random.nextDouble();
+        x = currentAgent.random.nextDouble();
         if (x<= conferenceRate){
             
             //25% agent calls family, 25% colleague, 25% friend, 25% stranger
-            x = agents.random.nextDouble();
+            x = currentAgent.random.nextDouble();
             Bag temp;
             if (x<0.25)
                 temp = this.myFamilies;
@@ -221,44 +221,44 @@ public class Agent implements Steppable{
             else
                 temp = this.myStrangers;
             
-            x = agents.random.nextDouble();
-            Agent callee = (Agent)temp.get((int)(x*temp.size()));
-            //Caller and callee should not be in the same place
-            while(callee.location==this.location){
+            x = currentAgent.random.nextDouble();
+            Agent lisOrSpk = (Agent)temp.get((int)(x*temp.size()));
+            //Originator and listener/speaker should not be in the same place
+            while(lisOrSpk.location==this.location){
                 temp = this.myStrangers;//to avoid all group members being in the same place
-                x = agents.random.nextDouble();
-                callee = (Agent)temp.get((int)(x*temp.size()));
+                x = currentAgent.random.nextDouble();
+                lisOrSpk = (Agent)temp.get((int)(x*temp.size()));
             }
             
             /*
             Agent callee= (Agent)agents.allAgents.get((int)(x*agents.numAgents));
-            //Caller and callee should not be in the same place
+            //Originator and listener/speaker should not be in the same place
             while(callee.location==this.location){
                 x = agents.random.nextDouble();
                 callee= (Agent)agents.allAgents.get((int)(x*agents.numAgents));
             }*/
             
             //make sure that each agent is only called once in each step
-            if (!callee.isInvited){
-                x = agents.random.nextDouble();
-                Conference conference = new Conference(this, callee, (int)Math.round(x), state.schedule.getSteps());
+            if (!lisOrSpk.isInvited){
+                x = currentAgent.random.nextDouble();
+                Conference conference = new Conference(this, lisOrSpk, (int)Math.round(x), state.schedule.getSteps());
 
-                //The callee makes a decision (whether or not to take this call).
-                callee.handleAConference(conference, state);
-                agents.conferencesInThisStep.add(conference);
+                //The listener/speaker makes a decision (whether or not to take this video reference).
+                lisOrSpk.handleAConference(conference, state);
+                currentAgent.conferencesInThisStep.add(conference);
 
                 //Keep history. Disabled for now to save space
                 //callee.callHistory.add(call);
                 
-                callee.isInvited = true;
-                callee.currentConference = conference;
+                lisOrSpk.isInvited = true;
+                lisOrSpk.currentConference = conference;
 
                 //Add this call to all of the callee's neighbors
-                callee.currentNeighbors = agents.getNeighbors(callee.location);
+                lisOrSpk.currentNeighbors = currentAgent.getNeighbors(lisOrSpk.location);
                 Agent neighbor;
-                for(int i=0;i<callee.currentNeighbors.size();i++){
-                    neighbor = (Agent)callee.currentNeighbors.get(i);
-                    if (neighbor.id!=callee.id)
+                for(int i=0;i<lisOrSpk.currentNeighbors.size();i++){
+                    neighbor = (Agent)lisOrSpk.currentNeighbors.get(i);
+                    if (neighbor.id!=lisOrSpk.id)
                         neighbor.neighboringConference.add(conference);
                 }
             }
@@ -414,8 +414,8 @@ public class Agent implements Steppable{
             
             //UPDATED: now we use payoffs as feedbacks
             //In the 2nd simulation: 
-            //remeber that, in meeting, library and party, 
-            //people think callee should ignore
+            // ## remeber that, in meeting, library and subway,
+            // ## people think listener/speaker should ignore
             int l = (int)(conference.location/Agents.agentsCount);
             if (conference.action==1){
                 switch(l){
@@ -425,8 +425,8 @@ public class Agent implements Steppable{
                     case 2:
                         payoff = agents.payoff_i[12+2*l];
                         break;
-                    case 3:
-                        payoff = agents.payoff_i[12+2*l];
+                    case 5:
+                        payoff = agents.payoff_i[11+2*l];
                         break;
                     default:
                         payoff = agents.payoff_a[12+2*l];
@@ -441,8 +441,8 @@ public class Agent implements Steppable{
                     case 2: 
                         payoff = agents.payoff_i[13+2*l];
                         break;
-                    case 3:
-                        payoff = agents.payoff_i[13+2*l];
+                    case 5:
+                        payoff = agents.payoff_i[11+2*l];
                         break;
                     default:
                         payoff = agents.payoff_a[13+2*l];
@@ -485,10 +485,10 @@ public class Agent implements Steppable{
         double[] one = new double[data.numAttributes()];
         //location
         one[0] = rec.location;
-        //caller relation
+        //originator relation
         one[1] = rec.originatorRelation;
-        //urgency
-        one[2] = rec.switchOption == 1 ?0:1;//note that 0 is for true
+        //to see if all audio and video matter
+        one[2] = rec.switchOption == 0 ?0:rec.switchOption;//note that 0 is for true
         //exists family
         one[3] = rec.existsFamily?0:1;
         //exists colleague

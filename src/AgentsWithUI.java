@@ -26,7 +26,7 @@ public class AgentsWithUI extends GUIState{
     
     public AgentsWithUI(){super(new Agents(System.currentTimeMillis()));}
     public AgentsWithUI(SimState state){super(state);}
-    public static String getName(){return "Ringer Manager Simulation";}
+    public static String getName(){return "VR Manager Simulation";}
     
     public void init(Controller c){
         super.init(c);
