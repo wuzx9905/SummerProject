@@ -5,11 +5,11 @@ public class RecordForLearning {
     //PAYOFF = AVG(weights[0]*Callee_Payoff, weights[1]*Caller_Payoff, 
     //  weights[2]*AVG(Neighbor_Payoff))
 	//Perfect
-    public static double[] weights = new double[]{1.0,1.0,1.0};
+//    public static double[] weights = new double[]{1.0,1.0,1.0};
     //Selfish
-    //public static double[] weights = new double[]{3.0,0.0,0.0};
+//    public static double[] weights = new double[]{3.0,0.0,0.0};
     //Generous
-    //public static double[] weights = new double[]{1.5,0.0,1.5};
+    public static double[] weights = new double[]{1.5,0.0,1.5};
     
     public static String[] relationTypes = new String[]{"family","colleague","friend","stranger"};
     
