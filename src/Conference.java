@@ -6,11 +6,10 @@ public class Conference {
     public Agent callee;
     public int switchOption;
     //0 for audio and video;
-    //1 for audio;
-    //2 for video;
+    //1 for audio or video;
     //when choosing to turn on one switch, the other switch would turn off by default.
     
-    public int action; //0 for turning on, 1 for turning off.
+    public int action; //0 for turning off, 1 for turning on.
     public Bag feedbacks;
     
     public int location; //keep location, since agents move around

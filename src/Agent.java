@@ -78,14 +78,13 @@ public class Agent implements Steppable{
                 Arrays.asList(Agents.locations)));
         dataSetList.add(aa);
         
-        //caller relation
+        //originator relation
         aa = new Attribute("originator_relation", new ArrayList<String>(
                 Arrays.asList(RecordForLearning.relationTypes)));
         dataSetList.add(aa);
         
-        //urgency
         List<String> tf = new ArrayList<String>();//True of False attributes
-        tf.add("0");tf.add("1");tf.add("2");tf.add("3");
+        tf.add("1");tf.add("0");
         aa = new Attribute("switchOption", tf);
         dataSetList.add(aa);
         //exists_family
@@ -97,8 +96,8 @@ public class Agent implements Steppable{
         //exists_friend
         aa = new Attribute("exists_friend", tf);
         dataSetList.add(aa);
-        //match or not
-        aa = new Attribute("match", tf);
+        //turn on or not
+        aa = new Attribute("switch_option", tf);
         dataSetList.add(aa);
         //payoff, numeric
         aa = new Attribute("@Class@");
@@ -117,14 +116,14 @@ public class Agent implements Steppable{
         //caller relation
         one[1] = rec.originatorRelation;
         //switchOption
-        one[2] = rec.switchOption;//Show the switching status of audio and video.
+        one[2] = rec.switchOption>0?0:1;//Show the switching status of audio and video.
         //exists family
         one[3] = rec.existsFamily?0:1;
         //exists colleague
         one[4] = rec.existsColleague?0:1;
         //exists friend
         one[5] = rec.existsFriend?0:1;
-        //match or not?
+        //turn on or not?
         one[6] = 1-rec.action;
         //payoff
         one[7] = rec.getPayoff();
@@ -156,8 +155,8 @@ public class Agent implements Steppable{
             
             //location = loction type id * number of agents + location id
             //e.g., meeting #1 with 1000 agents = 1*1000+1=1001
-            //75% probability, agent enters own home/meeting/party
-            //25% probability, agent enters another random home/meeting/party
+            //75% probability, agent enters own home/meeting/library
+            //25% probability, agent enters another random home/meeting/library
             x = currentAgent.random.nextDouble();
             switch(i){
                 case 0: //home
@@ -241,7 +240,7 @@ public class Agent implements Steppable{
             //make sure that each agent is only called once in each step
             if (!lisOrSpk.isInvited){
                 x = currentAgent.random.nextDouble();
-                Conference conference = new Conference(this, lisOrSpk, (int)Math.round(x), state.schedule.getSteps());
+                Conference conference = new Conference(this, lisOrSpk, (int)Math.round(x)<0.5?1:0, state.schedule.getSteps());
 
                 //The listener/speaker makes a decision (whether or not to take this video reference).
                 lisOrSpk.handleAConference(conference, state);
@@ -299,7 +298,7 @@ public class Agent implements Steppable{
         //Originally, the fixed norms are:
         //If in a meeting or a library, not answer
         //Otherwise, answer
-        if ((int)(location/Agents.agentsCount)==1||(int)(location/Agents.agentsCount)==2){
+        if ((int)(location/Agents.agentsCount)==1||(int)(location/Agents.agentsCount)==3){
             basedonloc = false;
         }
         
@@ -322,7 +321,7 @@ public class Agent implements Steppable{
                 break;
             //at a library
             case 2:
-                basedonloc = false;
+                basedonloc = true;
                 break;
             //in an ER
             case 3:
@@ -345,13 +344,13 @@ public class Agent implements Steppable{
         //if (call.isStranger()&&(!call.urgency))
         //    basedoncall = false;
         if (conference.isStranger()){
-            if (conference.switchOption == 1)
+            if (conference.switchOption == 0)
                 basedoncall = agents.payoff_a[6]>agents.payoff_a[7];
             else
                 basedoncall = agents.payoff_a[4]>agents.payoff_a[5];
         }
         else{
-            if (conference.switchOption == 1)
+            if (conference.switchOption == 0)
                 basedoncall = agents.payoff_a[2]>agents.payoff_a[3];
             else
                 basedoncall = agents.payoff_a[0]>agents.payoff_a[1];
@@ -381,7 +380,7 @@ public class Agent implements Steppable{
         Conference conference;
         Feedback temp;
         
-        //boolean feedback = true;
+        boolean feedback = true;
         //UPDATE: Now we use payoff instead of boolean feedback;
         double payoff = 0.0;
         
@@ -390,31 +389,31 @@ public class Agent implements Steppable{
             
             //decide a feedback based on call info
             //One solution is that the feedback is always random:
-            //feedback = state.random.nextBoolean();
+//            feedback = state.random.nextBoolean();
             
             //To begin with, let's assume that agents give feedbacks
             //solely based on locations:
             //positive if answered at home, parties, diner; random if ignored
             //negative if answered at meeting or library; random if ignored
             
-            /*
-            if ((int)(location/Agents.numAgents)==1||(int)(location/Agents.numAgents)==3){
-                if (call.action==1)
-                    feedback = false;
-                else
-                    feedback = state.random.nextBoolean();
-            }
-            else{
-                if (call.action==1)
-                    feedback = true;
-                else
-                    feedback = state.random.nextBoolean();
-            }*/
+
+//            if ((int)(location/Agents.agentsCount)==1||(int)(location/Agents.agentsCount)==3){
+//                if (conference.action==1)
+//                    feedback = false;
+//                else
+//                    feedback = state.random.nextBoolean();
+//            }
+//            else{
+//                if (conference.action==1)
+//                    feedback = true;
+//                else
+//                    feedback = state.random.nextBoolean();
+//            }
             
             
             //UPDATED: now we use payoffs as feedbacks
             //In the 2nd simulation: 
-            // ## remeber that, in meeting, library and subway,
+            // ## remember that, in meeting, library and subway,
             // ## people think listener/speaker should ignore
             int l = (int)(conference.location/Agents.agentsCount);
             if (conference.action==1){
@@ -425,8 +424,8 @@ public class Agent implements Steppable{
                     case 2:
                         payoff = agents.payoff_i[12+2*l];
                         break;
-                    case 5:
-                        payoff = agents.payoff_i[11+2*l];
+                    case 3:
+                        payoff = agents.payoff_i[12+2*l];
                         break;
                     default:
                         payoff = agents.payoff_a[12+2*l];
@@ -441,11 +440,11 @@ public class Agent implements Steppable{
                     case 2: 
                         payoff = agents.payoff_i[13+2*l];
                         break;
-                    case 5:
-                        payoff = agents.payoff_i[11+2*l];
+                    case 3:
+                        payoff = agents.payoff_i[13+2*l];
                         break;
                     default:
-                        payoff = agents.payoff_a[13+2*l];
+                        payoff = agents.payoff_a[12 + 2 * l];
                         break;
                 }
             }
@@ -462,10 +461,10 @@ public class Agent implements Steppable{
                 }else if (action == 0){
                     payoff = (conference.action==1?agents.payoff_i[12+2*l]:agents.payoff_i[13+2*l]);
                 }
-                //action could be -1, in which case no action is taken. 
+                //action could be -1, in which case no action is taken.
             }
             
-            //temp = new Feedback(call, this, feedback);
+//            temp = new Feedback(conference, this, feedback);
             temp = new Feedback(conference, this, payoff);
             conference.feedbacks.add(temp);
         }

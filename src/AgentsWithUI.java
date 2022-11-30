@@ -56,19 +56,18 @@ public class AgentsWithUI extends GUIState{
                 //after each step, chart desired information
                 Agents agents = (Agents)state;
                 double x = state.schedule.getSteps();
-                
-                //The parameter that is being monitored. 
-                //double y = (double)agents.neighborCount;
-                //double y = agents.overallHappiness;
+                //The parameter that is being monitored.
+//                double y = (double)agents.neighborCount;
+//                double y = agents.overallHappiness;
                 double y = agents.payoff;
                 double z = agents.overallHappiness;
-                
-                //total_payoff+=y;
-                //total_happiness+=z;
+
+                total_payoff+=y;
+                total_happiness+=z;
                 
                 if (x >= state.schedule.EPOCH && x < state.schedule.AFTER_SIMULATION){
-                   //series.add(x, total_payoff/x, true);
-                   //series2.add(x, total_happiness/x, true);
+//                   series.add(x, total_payoff/x, true);
+//                   series2.add(x, total_happiness/x, true);
                    series.add(x, y, true);
                    series2.add(x, z, true);
                    chart.updateChartLater(state.schedule.getSteps());

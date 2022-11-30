@@ -7,9 +7,9 @@ public class RecordForLearning {
 	//Perfect
 //    public static double[] weights = new double[]{1.0,1.0,1.0};
     //Selfish
-//    public static double[] weights = new double[]{3.0,0.0,0.0};
+    public static double[] weights = new double[]{3.0,0.0,0.0};
     //Generous
-    public static double[] weights = new double[]{1.5,0.0,1.5};
+//    public static double[] weights = new double[]{1.0,0.0,1.0};
     
     public static String[] relationTypes = new String[]{"family","colleague","friend","stranger"};
     
@@ -55,26 +55,26 @@ public class RecordForLearning {
         this.existsColleague = false;
         this.existsFriend = false;
 
-        //callee payoff and caller payoff
+        //listener/speaker payoff and originator payoff
         this.calleePayoff = 0.0;
         this.originatorPayoff = 0.0;
         if (conference.action==1){
             //Callee payoff
             //if Callee does not know caller
             if (conference.isStranger()){
-                calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[6]:agents.payoff_a[4]);
+                calleePayoff = (conference.switchOption == 0 ?agents.payoff_a[6]:agents.payoff_a[4]);
             }else
-                calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[2]:agents.payoff_a[0]);
+                calleePayoff = (conference.switchOption == 0 ?agents.payoff_a[2]:agents.payoff_a[0]);
             //Caller payoff
-            originatorPayoff = (conference.switchOption == 1 ?agents.payoff_a[10]:agents.payoff_a[8]);
+            originatorPayoff = (conference.switchOption == 0 ?agents.payoff_a[10]:agents.payoff_a[8]);
         }else{
             //Callee payoff
             if (conference.isStranger()){
-                calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[7]:agents.payoff_a[5]);
+                calleePayoff = (conference.switchOption == 0 ?agents.payoff_a[7]:agents.payoff_a[5]);
             }else
-                calleePayoff = (conference.switchOption == 1 ?agents.payoff_a[3]:agents.payoff_a[1]);
+                calleePayoff = (conference.switchOption == 0 ?agents.payoff_a[3]:agents.payoff_a[1]);
             //Caller payoff
-            originatorPayoff = (conference.switchOption == 1 ?agents.payoff_a[11]:agents.payoff_a[9]);
+            originatorPayoff = (conference.switchOption == 0 ?agents.payoff_a[11]:agents.payoff_a[9]);
         }
         
         averageNeighborPayoff = 0.0;

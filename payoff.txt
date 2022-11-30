@@ -7,16 +7,16 @@
 # Turn on the audio[2]
 1
 # Turn off the audio[3]
--1
+-0.5
 # If Listener/Speaker does not know Caller:
 # Turn on the video[4]
 0
 # Turn off the video[5]
-0.25
+0.5
 # Turn on the audio[6]
 0.5
 # Turn off the audio[7]
--0.25
+-0.5
 
 #============================================#
 # Originator Payoff
@@ -34,22 +34,22 @@
 # Two numbers per line for:
 # Neighbor thinks listener/speaker should turn on/off audio and video
 # Turn on audio at home[12]
-1.00 0.67
+1 -0.67
 # Turn off audio at home[13]
-0.33 -0.33
+-0.67 0.33
 # Turn on audio in a meeting[14]
--1 -0.67
+1 -0.67
 # Turn off audio in a meeting[15]
--0.67 -0.33
+0.67 -0.33
 # Turn on audio during a library[16]
--0.67 -0.33
+-0.67 0.33
 # Turn off audio during a library[17]
--0.33 -0.67
+-0.33 0.67
 # Turn on audio in a subway[18]
--0.67 -0.33
+1 -0.33
 # Turn off audio in a subway[19]
--0.67 1
+-0.33 1
 # Turn on audio at the ER[20]
-0.67 1
+0.33 -1
 # Turn off audio at the ER[21]
--0.33 0.33
+-0.33 1

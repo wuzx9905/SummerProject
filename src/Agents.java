@@ -188,7 +188,7 @@ public class Agents extends SimState {
                         if (temp.id==0)
                             System.out.println("Record ID: "+temp.data.numInstances()+"\t"+record.toCSVString());
 
-                        //temp.records.add(record);
+//                        temp.records.add(record);
                         //also add to Weka dataset
                         temp.addRecord(record);
                         
@@ -209,7 +209,7 @@ public class Agents extends SimState {
                 Feedback feedback;
                 for(int i = 0; i<agents.conferencesInThisStep.size(); i++){
                     conference = (Conference)agents.conferencesInThisStep.get(i);
-                    if (conference.action==1){
+                    if (conference.action==0){
                         overallHappiness+=1.0;
                     }
                     else{
@@ -230,8 +230,8 @@ public class Agents extends SimState {
                 }
                 
                 //get average happiness per call
-                //if (peopleinvolved>0)
-                //    overallHappiness/=(double)peopleinvolved;
+                if (peopleinvolved>0)
+                    overallHappiness/=(double)peopleinvolved;
                 if (agents.conferencesInThisStep.size()>0)
                 	overallHappiness/=(double)agents.conferencesInThisStep.size();
 
@@ -244,61 +244,61 @@ public class Agents extends SimState {
                     if (conference.action==1){
                         //Callee payoff
                         if (conference.isStranger())
-                            payoff+=(conference.switchOption == 1 ?payoff_a[6]:payoff_a[4]);
+                            payoff+=(conference.switchOption == 0 ?payoff_a[6]:payoff_a[4]);
                         else
-                            payoff+=(conference.switchOption == 1 ?payoff_a[2]:payoff_a[0]);
+                            payoff+=(conference.switchOption == 0 ?payoff_a[2]:payoff_a[0]);
                         //Caller payoff
-                        payoff+=(conference.switchOption == 1 ?payoff_a[10]:payoff_a[8]);
+                        payoff+=(conference.switchOption == 0 ?payoff_a[10]:payoff_a[8]);
                         
                         //In first and second simulations, 
                         //Neighbor thinks callee should ignore calls during a meeting, 
                         //in a library, or at a party.
-                        /*
-                        int l = (int)(call.location/Agents.numAgents);
-                        switch(l){
-                            case 1: 
-                                payoff += multiplier*payoff_i[12+2*l];
-                                break;
-                            case 2: 
-                                payoff += multiplier*payoff_i[12+2*l];
-                                break;
-                            case 3:
-                                payoff += multiplier*payoff_i[12+2*l];
-                                break;
-                            default:
-                                payoff += multiplier*payoff_a[12+2*l];
-                                break;
-                        }*/
+
+//                        int l = (int)(conference.location/Agents.agentsCount);
+//                        switch(l){
+//                            case 1:
+//                                payoff += multiplier*payoff_i[12+2*l];
+//                                break;
+//                            case 2:
+//                                payoff += multiplier*payoff_i[12+2*l];
+//                                break;
+//                            case 3:
+//                                payoff += multiplier*payoff_i[12+2*l];
+//                                break;
+//                            default:
+//                                payoff += multiplier*payoff_a[12+2*l];
+//                                break;
+//                        }
                     }
                     //Ignore call:
                     else{
                         //Callee payoff
                         if (conference.isStranger())
-                            payoff+=(conference.switchOption == 1 ?payoff_a[7]:payoff_a[5]);
+                            payoff+=(conference.switchOption == 0 ?payoff_a[7]:payoff_a[5]);
                         else
-                            payoff+=(conference.switchOption == 1 ?payoff_a[3]:payoff_a[1]);
+                            payoff+=(conference.switchOption == 0 ?payoff_a[3]:payoff_a[1]);
                         //Caller payoff
-                        payoff+=(conference.switchOption == 1 ?payoff_a[11]:payoff_a[9]);
+                        payoff+=(conference.switchOption == 0 ?payoff_a[11]:payoff_a[9]);
                         
                         //In first and second simulations, 
                         //Neighbor thinks callee should ignore calls during a meeting, 
                         //in a library, or at a party.
-                        /*
-                        int l = (int)(call.location/Agents.numAgents);
-                        switch(l){
-                            case 1: 
-                                payoff += multiplier*payoff_i[13+2*l];
-                                break;
-                            case 2: 
-                                payoff += multiplier*payoff_i[13+2*l];
-                                break;
-                            case 3:
-                                payoff += multiplier*payoff_i[13+2*l];
-                                break;
-                            default:
-                                payoff += multiplier*payoff_a[13+2*l];
-                                break;
-                        }*/
+//
+//                        int l = (int)(conference.location/Agents.agentsCount);
+//                        switch(l){
+//                            case 1:
+//                                payoff += multiplier*payoff_i[13+2*l];
+//                                break;
+//                            case 2:
+//                                payoff += multiplier*payoff_i[13+2*l];
+//                                break;
+//                            case 3:
+//                                payoff += multiplier*payoff_i[13+2*l];
+//                                break;
+//                            default:
+//                                payoff += multiplier*payoff_a[Math.min(13 + 2 * l, 22)];
+//                                break;
+//                        }
                     }
 
                     //UPDATE: Use the actual payoffs the neighbors gave
@@ -314,10 +314,10 @@ public class Agents extends SimState {
                 
                 //When calculating overallHappiness, we don't consider callees.
                 //When calculating payoffs, callees are also involved. 
-                //peopleinvolved += agents.callsInThisStep.size();
+//                peopleinvolved += agents.conferencesInThisStep.size();
                 //get average payoff of all involved people
-                //if (peopleinvolved>0)
-                //    payoff/=(double)peopleinvolved;
+//                if (peopleinvolved>0)
+//                    payoff/=(double)peopleinvolved;
                 //UPDATE: average payoff per call
                 if (agents.conferencesInThisStep.size()>0)
                 	payoff /= (double)agents.conferencesInThisStep.size();
@@ -403,8 +403,8 @@ public class Agents extends SimState {
     }
     
     public void readPayoff(){
-        payoff_a = new double[]{1,0,2,-1,0,0.5,1,-0.5,1,-1,2,-2,0,0,1,-1,0,0,1,-1,0,0};
-        payoff_i = new double[]{1,0,2,-1,0,0.5,1,-0.5,1,-1,2,-2,0,0,-1,1,0,0,-1,1,0,0};
+        payoff_a = new double[]{1,0,2,-1,0,0.5,1,-0.5,1,-1,2,-2,0,0,1,-1,0,0,1,-1,0,0,0};
+        payoff_i = new double[]{1,0,2,-1,0,0.5,1,-0.5,1,-1,2,-2,0,0,-1,1,0,0,-1,1,0,0,0};
         try{
             BufferedReader reader = new BufferedReader(new FileReader("payoff.txt"));
             String line;
